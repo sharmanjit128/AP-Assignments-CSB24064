@@ -1,98 +1,101 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [count, setCount] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const handleIncrement = () => setCount((prev) => prev + 1);
+  const handleDecrement = () => setCount((prev) => (prev > 0 ? prev - 1 : prev));
+  const handleReset = () => setCount(0);
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
+
+  const backgroundColor = isDarkMode ? '#121212' : '#FFFFFF';
+  const textColor = isDarkMode ? '#F3F4F6' : '#111827';
+  const buttonBackground = isDarkMode ? '#27272a' : '#E5E7EB';
+  const buttonTextColor = isDarkMode ? '#FFFFFF' : '#111827';
+
+  return (
+    <View style={[styles.container, { backgroundColor }]}> 
+      <Text style={[styles.title, { color: textColor }]}>Digital Counter</Text>
+
+      <View style={styles.counterCard}>
+        <Text style={[styles.counterValue, { color: textColor }]}>{count}</Text>
+      </View>
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={[styles.button, styles.buttonSpacing, { backgroundColor: buttonBackground }]} onPress={handleDecrement}>
+          <Text style={[styles.buttonText, { color: buttonTextColor }]}>- Decrement</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: buttonBackground }]} onPress={handleIncrement}>
+          <Text style={[styles.buttonText, { color: buttonTextColor }]}>+ Increment</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={[styles.button, styles.resetButton, { backgroundColor: buttonBackground }]} onPress={handleReset}>
+        <Text style={[styles.buttonText, { color: buttonTextColor }]}>Reset</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.button, styles.themeButton, { backgroundColor: buttonBackground }]} onPress={toggleTheme}>
+        <Text style={[styles.buttonText, { color: buttonTextColor }]}>Toggle Theme</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    padding: 24,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 24,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  counterCard: {
+    width: 180,
+    height: 180,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 5,
+  },
+  counterValue: {
+    fontSize: 72,
+    fontWeight: '800',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  buttonSpacing: {
+    marginRight: 12,
+  },
+  button: {
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    minWidth: 140,
+    alignItems: 'center',
+  },
+  resetButton: {
+    marginBottom: 16,
+  },
+  themeButton: {
+    minWidth: 280,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
